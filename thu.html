@@ -4,29 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Đọc thư</title>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
   <style>
     body {
-      font-family: 'Be Vietnam Pro', sans-serif;
       background-color: #F8F4EF;
       color: #333;
-      padding: 2rem;
+      font-family: Georgia, serif;
+    }
+    main {
+      max-width: 600px;
+      margin: auto;
+      padding-top: 4rem;
     }
     #thu {
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 12px;
       background-color: #fff;
       padding: 2rem;
       font-size: 1.1rem;
       line-height: 1.7;
       white-space: pre-line;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
   </style>
 </head>
 <body>
-  <h2>📜 Lá thư gần đây</h2>
-  <div id="thu">Đang tải thư...</div>
+  <main class="container">
+    <h2>📖 Lá thư gần đây</h2>
+    <div id="thu">Đang tải thư...</div>
+  </main>
 
   <script>
     const thuEl = document.getElementById("thu");
@@ -34,7 +40,7 @@
     function typeWriter(text, i = 0) {
       if (i < text.length) {
         thuEl.innerHTML += text.charAt(i);
-        setTimeout(() => typeWriter(text, i + 1), 30);
+        setTimeout(() => typeWriter(text, i + 1), 25);
       }
     }
 
@@ -42,7 +48,7 @@
       .then((res) => res.json())
       .then((data) => {
         if (!data || data.length === 0) {
-          thuEl.textContent = "Hiện chưa có thư nào được chia sẻ gần đây.";
+          thuEl.textContent = "Hiện chưa có thư nào.";
         } else {
           thuEl.textContent = "";
           typeWriter(data[0].content);
