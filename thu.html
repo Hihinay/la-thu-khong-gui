@@ -3,43 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📖 Thư trong ngày</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  <title>Đọc thư</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #F8F4EF; color: #333; font-family: Georgia, serif; user-select: none; }
-    .thu {
-      background: #fff; padding: 2rem; border-radius: 12px;
-      white-space: pre-wrap; font-size: 1.1rem; min-height: 200px;
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: #F8F4EF;
+      color: #333;
+      padding: 2rem;
+    }
+    #thu {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+      padding: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      white-space: pre-line;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
-<body oncontextmenu="return false">
-  <main class="container">
-    <h2>📩 Lá thư hôm nay</h2>
-    <div class="thu" id="thu">Đang tải...</div>
-    <p><a href="index.html">← Quay lại</a></p>
-  </main>
+<body>
+  <h2>📜 Lá thư gần đây</h2>
+  <div id="thu">Đang tải thư...</div>
+
   <script>
-    async function loadThu() {
-      const res = await fetch("/api/thu");
-      const data = await res.json();
-      const el = document.getElementById("thu");
-      if (!data.length) {
-        el.innerText = "Chưa có thư nào hôm nay.";
-        return;
+    const thuEl = document.getElementById("thu");
+
+    function typeWriter(text, i = 0) {
+      if (i < text.length) {
+        thuEl.innerHTML += text.charAt(i);
+        setTimeout(() => typeWriter(text, i + 1), 30);
       }
-
-      const text = data[0].content;
-      let i = 0;
-      el.innerText = "";
-
-      const interval = setInterval(() => {
-        el.innerText += text[i];
-        i++;
-        if (i >= text.length) clearInterval(interval);
-      }, 40);
     }
-    loadThu();
+
+    fetch("/api/thu")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data || data.length === 0) {
+          thuEl.textContent = "Hiện chưa có thư nào được chia sẻ gần đây.";
+        } else {
+          thuEl.textContent = "";
+          typeWriter(data[0].content);
+        }
+      });
   </script>
 </body>
 </html>
