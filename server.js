@@ -9,30 +9,24 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use("/", express.static(__dirname));
-
+app.use("/html", express.static(path.join(__dirname, "html")));
 
 const THU_FILE = path.join(__dirname, "thu.json");
 
+// POST gửi thư
 app.post("/api/thu", (req, res) => {
   const { content } = req.body;
   const now = new Date();
 
-  // Lọc thư rác
-  const badPattern = /[^a-zA-Z0-9\s.,!?áàảãạâăêôơưđÁÀẢÃẠÂĂÊÔƠƯĐ]/g;
-  if (
-    !content ||
-    content.trim().length < 20 ||
-    badPattern.test(content) ||
-    content.length > 2000
-  ) {
+  // ✅ Chỉ kiểm tra độ dài, không kiểm ký tự
+  if (!content || content.trim().length < 20 || content.length > 2000) {
     return res.status(400).json({
       success: false,
-      error: "Nội dung thư không hợp lệ.",
+      error: "Nội dung thư không hợp lệ. Vui lòng viết dài hơn một chút.",
     });
   }
 
-  // Luôn ghi đè thư cũ
+  // Ghi đè thư mới (chỉ 1 thư mỗi lần hiển thị)
   const newThu = {
     content: content.trim(),
     time: now.toISOString(),
@@ -42,6 +36,7 @@ app.post("/api/thu", (req, res) => {
   res.json({ success: true });
 });
 
+// GET đọc thư nếu còn trong 3 tiếng
 app.get("/api/thu", (req, res) => {
   let data = [];
   try {
@@ -55,12 +50,17 @@ app.get("/api/thu", (req, res) => {
     const diffHours = diffMs / (1000 * 60 * 60);
 
     if (diffHours >= 3) {
-      // Thư đã quá 3 tiếng → không trả về thư
+      fs.writeFileSync(THU_FILE, "[]");
       return res.json([]);
     }
   }
 
   res.json(data);
+});
+
+// ✅ Redirect "/" về index.html
+app.get("/", (req, res) => {
+  res.redirect("/html/index.html");
 });
 
 app.listen(PORT, () => {
