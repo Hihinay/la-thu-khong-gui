@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📖 Thư trong ngày</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  <style>
+    body { background-color: #F8F4EF; color: #333; font-family: Georgia, serif; user-select: none; }
+    .thu {
+      background: #fff; padding: 2rem; border-radius: 12px;
+      white-space: pre-wrap; font-size: 1.1rem; min-height: 200px;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false">
+  <main class="container">
+    <h2>📩 Lá thư hôm nay</h2>
+    <div class="thu" id="thu">Đang tải...</div>
+    <p><a href="index.html">← Quay lại</a></p>
+  </main>
+  <script>
+    async function loadThu() {
+      const res = await fetch("/api/thu");
+      const data = await res.json();
+      const el = document.getElementById("thu");
+      if (!data.length) {
+        el.innerText = "Chưa có thư nào hôm nay.";
+        return;
+      }
+
+      const text = data[0].content;
+      let i = 0;
+      el.innerText = "";
+
+      const interval = setInterval(() => {
+        el.innerText += text[i];
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 40);
+    }
+    loadThu();
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gửi thư</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  <style>
+    body { background-color: #F8F4EF; color: #333; font-family: Georgia, serif; }
+    textarea { min-height: 200px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h2>✍️ Viết thư hôm nay</h2>
+    <form id="formThu">
+      <textarea id="noidung" placeholder="Gửi 1 lần mỗi ngày..." required></textarea>
+      <button type="submit">Gửi thư</button>
+    </form>
+    <p id="status"></p>
+    <p><a href="index.html">← Trang chủ</a></p>
+  </main>
+
+  <script>
+    document.getElementById("formThu").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const content = document.getElementById("noidung").value;
+      const status = document.getElementById("status");
+
+      try {
+        const res = await fetch("/api/thu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          status.textContent = "✅ Gửi thành công!";
+          document.getElementById("noidung").value = "";
+        } else {
+          status.textContent = "❌ Gửi thất bại: " + (data.error || "Không rõ lỗi.");
+        }
+      } catch (err) {
+        status.textContent = "❌ Lỗi kết nối với server.";
+        console.error("Lỗi gửi thư:", err);
+      }
+    });
+  </script>
+</body>
+</html>
