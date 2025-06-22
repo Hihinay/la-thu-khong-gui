@@ -9,7 +9,8 @@ const PORT = 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use("/html", express.static(path.join(__dirname, "html")));
+app.use("/", express.static(__dirname));
+
 
 const THU_FILE = path.join(__dirname, "thu.json");
 
