@@ -3,46 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📖 Thư cộng đồng</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <title>Thư cộng đồng</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #F8F4EF; color: #333333; font-family: Georgia, serif; }
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: #F8F4EF;
+      color: #333333;
+      padding: 2rem;
+    }
     .thu {
-      background: #fff;
-      border-radius: 12px;
-      padding: 1rem;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 1.5rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      line-height: 1.6;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+      white-space: pre-line;
     }
-    a[role="button"] {
-      background-color: #A7C4BC;
-    }
-    a[role="button"]:hover {
-      background-color: #FFEBB7;
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
-  <main class="container">
-    <h2>📜 Những lá thư đã gửi</h2>
-    <div id="ds-thu"></div>
-    <p><a href="index.html">← Quay lại trang chủ</a></p>
-  </main>
+  <h2>📚 Thư cộng đồng</h2>
+  <div id="danh-sach-thu">Đang tải thư...</div>
+
   <script>
-    async function loadThu() {
-      const res = await fetch("/api/thu");
-      const data = await res.json();
-      const container = document.getElementById("ds-thu");
-      if (!data.length) return container.innerHTML = "<p>Chưa có thư nào.</p>";
-      container.innerHTML = data.reverse().map((thu, i) => `
-        <div class="thu">
-          <p><strong>Thư #${data.length - i}</strong></p>
-          <p>${thu.content}</p>
-          <small><em>🕰 ${new Date(thu.time).toLocaleString()}</em></small>
-        </div>
-      `).join("");
-    }
-    loadThu();
+    const container = document.getElementById("danh-sach-thu");
+
+    fetch("/api/thu")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data || data.length === 0) {
+          container.textContent = "Hiện chưa có thư nào được chia sẻ.";
+          return;
+        }
+
+        container.innerHTML = "";
+        data.forEach((thu, index) => {
+          const div = document.createElement("div");
+          div.className = "thu";
+          div.textContent = thu.content;
+          container.appendChild(div);
+        });
+      })
+      .catch(() => {
+        container.textContent = "Lỗi tải thư.";
+      });
   </script>
 </body>
 </html>
